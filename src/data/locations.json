@@ -1,0 +1,68 @@
+{
+    "locations": [
+        {
+            "id": 1,
+            "title": "Red Square",
+            "geo": {
+                "lat": 55.754167,
+                "lng": 37.62
+            }
+        },
+        {
+            "id": 2,
+            "title": "Moscow International House of Music",
+            "geo": {
+                "lat": 55.733056,
+                "lng": 37.646667
+            }
+        },
+        {
+            "id": 3,
+            "title": "Bolshoi Theatre",
+            "geo": {
+                "lat": 55.760278,
+                "lng": 37.618611
+            }
+        },
+        {
+            "id": 4,
+            "title": "Moscow State University",
+            "geo": {
+                "lat": 55.7039,
+                "lng": 37.5286
+            }
+        },
+        {
+            "id": 5,
+            "title": "Cathedral of Christ the Saviour",
+            "geo": {
+                "lat": 55.744444,
+                "lng": 37.605556
+            }
+        },
+        {
+            "id": 6,
+            "title": "Moscow International Business Center",
+            "geo": {
+                "lat": 55.749578,
+                "lng": 37.534358
+            }
+        },
+        {
+            "id": 7,
+            "title": "Zhivopisny Bridge",
+            "geo": {
+                "lat": 55.777222,
+                "lng": 37.446667
+            }
+        },
+        {
+            "id": 8,
+            "title": "Monument to the Conquerors of Space",
+            "geo": {
+                "lat": 55.822778,
+                "lng": 37.64
+            }
+        }
+    ]
+}

@@ -1,21 +1,45 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
+import Header from './components/Header';
+
+import MapStyles from './data/mapStyles';
+
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+
+    componentDidMount() {
+        // initMap() to the global window context
+        window.initMap = this.initMap;
+        // Asynchronously load the Google Maps script, passing in the callback reference
+        loadJS('https://maps.googleapis.com/maps/api/js?key=AIzaSyA_JmqWP_TjdTqHxIAHUKAC_LbxuiZHhpI&callback=initMap')
+    }
+
+    initMap = () => {
+        const map = new window.google.maps.Map(document.getElementById('map'), {
+            zoom: 13,
+            center: { lat: 55.75, lng: 37.616667 },
+            styles: MapStyles
+        });
+
+    }
+
+    render() {
+        return (
+            <div className="App">
+                <Header />
+
+                <div id="map" role="application"></div>
+            </div>
+        );
+    }
+}
+
+function loadJS(src) {
+    const ref = window.document.getElementsByTagName("script")[0];
+    const script = window.document.createElement("script");
+    script.src = src;
+    script.async = true;
+    ref.parentNode.insertBefore(script, ref);
 }
 
 export default App;
