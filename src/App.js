@@ -32,9 +32,11 @@ class App extends Component {
             mapTypeControl: false
         });
 
-        const markerList = [];
-        const bounds = new window.google.maps.LatLngBounds();
-        const infowindow = new window.google.maps.InfoWindow();
+        const markerList = [],
+            bounds = new window.google.maps.LatLngBounds(),
+            infowindow = new window.google.maps.InfoWindow({
+                maxWidth: 250
+            });
 
         locations.map(location => {
             const id = location.id,
@@ -51,7 +53,7 @@ class App extends Component {
             });
 
             marker.addListener('click', () => {
-                populateInfoWindow(marker, infowindow);
+                populateInfoWindow(marker, infowindow, location);
             });
 
             markerList.push(marker)
@@ -70,8 +72,18 @@ class App extends Component {
             // The infowindow is not already opened on this marker.
             if (infowindow.marker !== marker) {
                 infowindow.marker = marker;
-                infowindow.setContent(`<div> This is ${marker.title} </div>`);
+                // NOTE: Test image!
+                infowindow.setContent(
+                                    `<p> </p>
+                                    <img class="img-iw" src="https://farm8.staticflickr.com/7013/13670415134_7aaae34bfd_h.jpg" alt="" />
+                                    <p class="header-iw">${marker.title}</p>`
+                                );
                 infowindow.open(map, marker);
+
+                // Apply custom infoWindow styles
+                document.querySelector('.gm-style-iw').parentNode.classList.add('custom-iw-parent');
+                document.querySelector('.gm-style-iw').classList.add('custom-iw');
+
                 // The marker property is cleared if the infowindow is closed.
                 infowindow.addListener('closeclick', function () {
                     infowindow.setMarker = null;
@@ -79,8 +91,6 @@ class App extends Component {
             }
         }
     }
-
-
 
     render() {
         return (
