@@ -25,7 +25,6 @@ class App extends Component {
 
         const { mapStyles, locations } = this.state;
 
-
         const map = new window.google.maps.Map(document.getElementById('map'), {
             zoom: 13,
             center: { lat: 55.75, lng: 37.616667 },
@@ -35,6 +34,7 @@ class App extends Component {
 
         const markerList = [];
         const bounds = new window.google.maps.LatLngBounds();
+        const infowindow = new window.google.maps.InfoWindow();
 
         locations.map(location => {
             const id = location.id,
@@ -50,6 +50,10 @@ class App extends Component {
                 id: id
             });
 
+            marker.addListener('click', () => {
+                populateInfoWindow(marker, infowindow);
+            });
+
             markerList.push(marker)
             bounds.extend(position);
 
@@ -62,7 +66,21 @@ class App extends Component {
             markers: markerList,
         })
 
+        function populateInfoWindow(marker, infowindow) {
+            // The infowindow is not already opened on this marker.
+            if (infowindow.marker !== marker) {
+                infowindow.marker = marker;
+                infowindow.setContent(`<div> This is ${marker.title} </div>`);
+                infowindow.open(map, marker);
+                // The marker property is cleared if the infowindow is closed.
+                infowindow.addListener('closeclick', function () {
+                    infowindow.setMarker = null;
+                });
+            }
+        }
     }
+
+
 
     render() {
         return (
