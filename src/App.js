@@ -4,8 +4,15 @@ import './App.css';
 import Header from './components/Header';
 
 import MapStyles from './data/mapStyles';
+import GeoData from './data/locations';
 
 class App extends Component {
+
+    state = {
+        mapStyles: MapStyles,
+        locations: GeoData.locations,
+        markers: []
+    }
 
     componentDidMount() {
         // initMap() to the global window context
@@ -15,11 +22,45 @@ class App extends Component {
     }
 
     initMap = () => {
+
+        const { mapStyles, locations } = this.state;
+
+
         const map = new window.google.maps.Map(document.getElementById('map'), {
             zoom: 13,
             center: { lat: 55.75, lng: 37.616667 },
-            styles: MapStyles
+            styles: mapStyles,
+            mapTypeControl: false
         });
+
+        const markerList = [];
+        const bounds = new window.google.maps.LatLngBounds();
+
+        locations.map(location => {
+            const id = location.id,
+                position = location.geo,
+                title = location.title;
+
+            // Create a marker
+            const marker = new window.google.maps.Marker({
+                map: map,
+                position: position,
+                title: title,
+                animation: window.google.maps.Animation.DROP,
+                id: id
+            });
+
+            markerList.push(marker)
+            bounds.extend(position);
+
+            return false;
+        });
+
+        map.fitBounds(bounds);
+
+        this.setState({
+            markers: markerList,
+        })
 
     }
 
