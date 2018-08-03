@@ -43,7 +43,22 @@ body,
     text-align: center;
 }
 
+.img-iw-parent {
+    text-align: center;
+    overflow: hidden !important;
+}
+
 .img-iw {
     max-width: 100% !important;
     max-height: 250px !important;
+}
+
+@keyframes rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.img-iw.loading {
+    animation: rotate 1s ease-in-out infinite;
 }

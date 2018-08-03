@@ -3,8 +3,12 @@ import './App.css';
 
 import Header from './components/Header';
 
+import FlickrAPI from './utils/FlickrAPI';
+
 import MapStyles from './data/mapStyles';
 import GeoData from './data/locations';
+
+import logo from './icons/loading.png';
 
 class App extends Component {
 
@@ -53,7 +57,7 @@ class App extends Component {
             });
 
             marker.addListener('click', () => {
-                populateInfoWindow(marker, infowindow, location);
+                populateInfoWindow(marker, infowindow);
             });
 
             markerList.push(marker)
@@ -75,14 +79,23 @@ class App extends Component {
                 // NOTE: Test image!
                 infowindow.setContent(
                                     `<p> </p>
-                                    <img class="img-iw" src="https://farm8.staticflickr.com/7013/13670415134_7aaae34bfd_h.jpg" alt="" />
+                                    <img class="img-iw loading" src=${logo} alt="" />
                                     <p class="header-iw">${marker.title}</p>`
                                 );
                 infowindow.open(map, marker);
 
                 // Apply custom infoWindow styles
-                document.querySelector('.gm-style-iw').parentNode.classList.add('custom-iw-parent');
-                document.querySelector('.gm-style-iw').classList.add('custom-iw');
+                const iw = document.querySelector('.gm-style-iw');
+                iw.parentNode.classList.add('custom-iw-parent');
+                iw.classList.add('custom-iw');
+
+                const iwImg = document.querySelector('.img-iw');
+                iwImg.parentNode.classList.add('img-iw-parent');
+
+                FlickrAPI.searchPic(marker).then(res => {
+                    iwImg.onload = function () { iwImg.classList.remove('loading')}
+                    iwImg.src = res;
+                })
 
                 // The marker property is cleared if the infowindow is closed.
                 infowindow.addListener('closeclick', function () {
