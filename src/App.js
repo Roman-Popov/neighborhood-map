@@ -58,6 +58,8 @@ class App extends Component {
             });
 
             marker.addListener('click', () => {
+                this.state.markers.forEach(el => el.setAnimation(null));
+                marker.setAnimation(window.google.maps.Animation.BOUNCE);
                 populateInfoWindow(marker, infowindow);
             });
 
@@ -116,6 +118,7 @@ class App extends Component {
 
                 // The marker property is cleared if the infowindow is closed.
                 infowindow.addListener('closeclick', function () {
+                    infowindow.marker.setAnimation(null);
                     infowindow.setMarker = null;
                 });
             }
