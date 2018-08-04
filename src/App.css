@@ -41,6 +41,10 @@ body,
 
 .header-iw {
     text-align: center;
+    background: linear-gradient(90deg, transparent, rgba(173, 216, 230, 0.6) 10%, rgba(173, 216, 230, 0.6) 90%, transparent);
+    border-top: 1px solid lightblue;
+    border-bottom: 1px solid lightblue;
+    margin-bottom: 5px;
 }
 
 .img-iw-parent {
@@ -60,5 +64,7 @@ body,
 }
 
 .img-iw.loading {
+    width: 200px;
+    padding: 50px;
     animation: rotate 1s ease-in-out infinite;
 }

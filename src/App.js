@@ -38,6 +38,7 @@ class App extends Component {
 
         const markerList = [],
             bounds = new window.google.maps.LatLngBounds(),
+            geocoder = new window.google.maps.Geocoder(),
             infowindow = new window.google.maps.InfoWindow({
                 maxWidth: 250
             });
@@ -78,9 +79,9 @@ class App extends Component {
                 infowindow.marker = marker;
                 // NOTE: Test image!
                 infowindow.setContent(
-                                    `<p> </p>
+                                    `<p class="header-iw">${marker.title}</p>
                                     <img class="img-iw loading" src=${logo} alt="" />
-                                    <p class="header-iw">${marker.title}</p>`
+                                    <address class="location-iw"> </address>`
                                 );
                 infowindow.open(map, marker);
 
@@ -96,6 +97,22 @@ class App extends Component {
                     iwImg.onload = function () { iwImg.classList.remove('loading')}
                     iwImg.src = res;
                 })
+
+                geocoder.geocode({'location': marker.position}, function(results, status) {
+                    if (status === 'OK') {
+                      if (results[0]) {
+                        //  Get nearest address with house number
+                        const addrWithStreetNumber = results.filter(
+                            res => res.address_components[0].types.indexOf('street_number') !== -1
+                        )[0];
+                        document.querySelector('.location-iw').innerHTML = addrWithStreetNumber.formatted_address;
+                      } else {
+                        window.alert('No results found');
+                      }
+                    } else {
+                      window.alert('Geocoder failed due to: ' + status);
+                    }
+                  });
 
                 // The marker property is cleared if the infowindow is closed.
                 infowindow.addListener('closeclick', function () {
