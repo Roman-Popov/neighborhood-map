@@ -29,17 +29,18 @@ class App extends Component {
 
         const { mapStyles, locations } = this.state;
 
-        const map = new window.google.maps.Map(document.getElementById('map'), {
+        const GM = window.google.maps;
+
+        const map = new GM.Map(document.getElementById('map'), {
             zoom: 13,
             center: { lat: 55.75, lng: 37.616667 },
             styles: mapStyles,
             mapTypeControl: false
         });
 
-        const markerList = [],
-            bounds = new window.google.maps.LatLngBounds(),
-            geocoder = new window.google.maps.Geocoder(),
-            infowindow = new window.google.maps.InfoWindow({
+        const bounds = new GM.LatLngBounds(),
+            geocoder = new GM.Geocoder(),
+            infowindow = new GM.InfoWindow({
                 maxWidth: 250
             });
 
@@ -49,21 +50,22 @@ class App extends Component {
                 title = location.title;
 
             // Create a marker
-            const marker = new window.google.maps.Marker({
+            const marker = new GM.Marker({
                 map: map,
                 position: position,
                 title: title,
-                animation: window.google.maps.Animation.DROP,
+                animation: GM.Animation.DROP,
                 id: id
             });
 
             marker.addListener('click', () => {
-                this.state.markers.forEach(el => el.setAnimation(null));
-                marker.setAnimation(window.google.maps.Animation.BOUNCE);
                 populateInfoWindow(marker, infowindow);
             });
 
-            markerList.push(marker)
+            // Render is not necessary at this moment,
+            // so push markers to state without setState()
+            this.state.markers.push(marker);
+
             bounds.extend(position);
 
             return false;
@@ -71,32 +73,36 @@ class App extends Component {
 
         map.fitBounds(bounds);
 
-        this.setState({
-            markers: markerList,
-        })
+        map.addListener('click', () => GM.event.trigger(infowindow, 'closeclick'));
+
+        infowindow.addListener('closeclick', function () {
+            infowindow.close();
+            // The marker property is cleared if the infowindow is closed.
+            infowindow.marker && infowindow.marker.setAnimation(null);
+            infowindow.marker = null;
+        });
 
         function populateInfoWindow(marker, infowindow) {
             // The infowindow is not already opened on this marker.
             if (infowindow.marker !== marker) {
                 infowindow.marker = marker;
-                // NOTE: Test image!
                 infowindow.setContent(
                                     `<p class="header-iw">${marker.title}</p>
-                                    <img class="img-iw loading" src=${logo} alt="" />
+                                    <img class="img-iw loading" src=${logo} alt="${marker.title}" />
                                     <address class="location-iw"> </address>`
                                 );
                 infowindow.open(map, marker);
 
                 // Apply custom infoWindow styles
-                const iw = document.querySelector('.gm-style-iw');
+                const iw = document.querySelector('.gm-style-iw'),
+                    iwImg = document.querySelector('.img-iw');
+
                 iw.parentNode.classList.add('custom-iw-parent');
                 iw.classList.add('custom-iw');
-
-                const iwImg = document.querySelector('.img-iw');
                 iwImg.parentNode.classList.add('img-iw-parent');
 
                 FlickrAPI.searchPic(marker).then(res => {
-                    iwImg.onload = function () { iwImg.classList.remove('loading')}
+                    iwImg.onload = () => iwImg.classList.remove('loading');
                     iwImg.src = res;
                 })
 
@@ -114,12 +120,6 @@ class App extends Component {
                     } else {
                       window.alert('Geocoder failed due to: ' + status);
                     }
-                  });
-
-                // The marker property is cleared if the infowindow is closed.
-                infowindow.addListener('closeclick', function () {
-                    infowindow.marker.setAnimation(null);
-                    infowindow.setMarker = null;
                 });
             }
         }
@@ -128,9 +128,11 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <Header />
+                <Header
+                    markerList={this.state.markers}
+                />
 
-                <div id="map" role="application"></div>
+                <div id="map" role="application" aria-label="Map of Moscow"></div>
             </div>
         );
     }
