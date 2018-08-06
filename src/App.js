@@ -82,7 +82,7 @@ class App extends Component {
             infowindow.marker = null;
         });
 
-        function populateInfoWindow(marker, infowindow) {
+        const populateInfoWindow = (marker, infowindow) => {
             // The infowindow is not already opened on this marker.
             if (infowindow.marker !== marker) {
                 infowindow.marker = marker;
@@ -91,10 +91,10 @@ class App extends Component {
                                     <figure class="figure-iw">
                                         <img class="img-iw loading" src=${logo} alt="${marker.title}" />
                                         <figcaption class="credit">
-                                            Provided by <a href="" title="Image source">Flickr</a>
+                                            Provided by <a href="" target="_blank" title="Image source">Flickr</a>
                                         <figcaption>
                                     </figure>
-                                    <address class="location-iw"> </address>`
+                                    <address class="location-iw">Searching address...</address>`
                                 );
                 infowindow.open(map, marker);
 
@@ -102,7 +102,8 @@ class App extends Component {
                 const iw = document.querySelector('.gm-style-iw'),
                     iwFig = document.querySelector('.figure-iw'),
                     iwImg = document.querySelector('.img-iw'),
-                    iwImgSource = document.querySelector('.credit a');
+                    iwImgSource = document.querySelector('.credit a'),
+                    locationElem = document.querySelector('.location-iw')
 
                 iw.parentNode.classList.add('custom-iw-parent');
                 iw.classList.add('custom-iw');
@@ -116,25 +117,39 @@ class App extends Component {
                         document.querySelector('.credit').classList.add('visible');
                     }
                     iwImg.src = res.imgSource;
+                }).catch(() => {
+                    console.log('Fetch error')
+                    iwImg.classList.remove('loading');
                 })
 
-                geocoder.geocode({'location': marker.position}, function(results, status) {
-                    if (status === 'OK') {
-                      if (results[0]) {
+                this.getNearestAddress(marker.position, geocoder)
+                    .then(result => locationElem.innerHTML = result)
+            }
+        }
+    }
+
+    getNearestAddress = (markerPosition, geocoder) => {
+        return new Promise( (resolve) => {
+            geocoder.geocode({ 'location': markerPosition }, (results, status) => {
+                let response;
+                if (status === 'OK') {
+                    if (results[0]) {
                         //  Get nearest address with house number
                         const addrWithStreetNumber = results.filter(
                             res => res.address_components[0].types.indexOf('street_number') !== -1
                         )[0];
-                        document.querySelector('.location-iw').innerHTML = addrWithStreetNumber.formatted_address;
-                      } else {
-                        window.alert('No results found');
-                      }
+                        response = addrWithStreetNumber.formatted_address;
                     } else {
-                      window.alert('Geocoder failed due to: ' + status);
+                        response = 'No address found';
                     }
-                });
-            }
-        }
+                } else {
+                    console.log('Geocoder failed due to: ' + status);
+                    response = 'Geocoder failed, check your connection. See console for more info.';
+                }
+                resolve(response)
+            });
+        })
+
     }
 
     render() {
