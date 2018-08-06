@@ -88,22 +88,34 @@ class App extends Component {
                 infowindow.marker = marker;
                 infowindow.setContent(
                                     `<p class="header-iw">${marker.title}</p>
-                                    <img class="img-iw loading" src=${logo} alt="${marker.title}" />
+                                    <figure class="figure-iw">
+                                        <img class="img-iw loading" src=${logo} alt="${marker.title}" />
+                                        <figcaption class="credit">
+                                            Provided by <a href="" title="Image source">Flickr</a>
+                                        <figcaption>
+                                    </figure>
                                     <address class="location-iw"> </address>`
                                 );
                 infowindow.open(map, marker);
 
                 // Apply custom infoWindow styles
                 const iw = document.querySelector('.gm-style-iw'),
-                    iwImg = document.querySelector('.img-iw');
+                    iwFig = document.querySelector('.figure-iw'),
+                    iwImg = document.querySelector('.img-iw'),
+                    iwImgSource = document.querySelector('.credit a');
 
                 iw.parentNode.classList.add('custom-iw-parent');
                 iw.classList.add('custom-iw');
-                iwImg.parentNode.classList.add('img-iw-parent');
+                iwFig.parentNode.classList.add('figure-iw-parent');
+                iwFig.parentNode.parentNode.classList.add('figure-iw-grandparent');
 
                 FlickrAPI.searchPic(marker).then(res => {
-                    iwImg.onload = () => iwImg.classList.remove('loading');
-                    iwImg.src = res;
+                    iwImg.onload = () => {
+                        iwImg.classList.remove('loading');
+                        iwImgSource.href = res.author;
+                        document.querySelector('.credit').classList.add('visible');
+                    }
+                    iwImg.src = res.imgSource;
                 })
 
                 geocoder.geocode({'location': marker.position}, function(results, status) {

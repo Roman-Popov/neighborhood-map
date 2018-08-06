@@ -15,7 +15,10 @@ class FlickrAPI {
 
     static getOnePic(responseJSONpics) {
         const pic = responseJSONpics.filter(pic => (pic.ispublic) & !(pic.isfamily) & !(pic.isfriend))[0]
-        return `https://farm${pic.farm}.staticflickr.com/${pic.server}/${pic.id}_${pic.secret}_n.jpg`
+        return {
+            imgSource: `https://farm${pic.farm}.staticflickr.com/${pic.server}/${pic.id}_${pic.secret}_n.jpg`,
+            author: `http://www.flickr.com/photos/${pic.owner}/${pic.id}`
+        }
     }
 
     static searchPic(location) {

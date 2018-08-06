@@ -106,7 +106,7 @@ body,
 
 .visible {
     opacity: 0.95;
-    visibility: visible;
+    visibility: visible !important;
 }
 
 .filter-places-input-wrapper {
@@ -195,16 +195,54 @@ body,
     border-top: 1px solid lightblue;
     border-bottom: 1px solid lightblue;
     margin-bottom: 5px;
+    width: 100%;
 }
 
-.img-iw-parent {
+.figure-iw-parent {
     text-align: center;
-    overflow: hidden !important;
+    overflow: visible !important;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.figure-iw-grandparent {
+    overflow: visible !important;
+}
+
+.figure-iw {
+    position: relative;
+    overflow: visible;
 }
 
 .img-iw {
     max-width: 100% !important;
     max-height: 250px !important;
+}
+
+.credit {
+    visibility: hidden;
+    color: lightgray;
+    font-style: italic;
+    text-align: left;
+    margin-bottom: 1em;
+    writing-mode: vertical-lr;
+    position: absolute;
+    height: calc(100% - 1em);
+    width: 1.2em;
+    display: block;
+    bottom: 0;
+    right: -1.2em;
+    transform: rotate(180deg);
+}
+
+.credit a {
+    color: inherit;
+    text-decoration: underline dotted;
+}
+
+.credit a:hover {
+    color: initial;
 }
 
 @keyframes rotate {
