@@ -26,7 +26,10 @@ class FlickrAPI {
         return (
             fetch(`${url}&text=${location.title} architecture`)
             .then(response => response.json())
-            .then(result => this.getOnePic(result.photos.photo))
+            .then(result => {
+                if (result.photos.total === '0') throw new Error('Empty response');
+                return this.getOnePic(result.photos.photo)
+            })
         )
     }
 }

@@ -8,7 +8,9 @@ import FlickrAPI from './utils/FlickrAPI';
 import MapStyles from './data/mapStyles';
 import GeoData from './data/locations';
 
-import logo from './icons/loading.png';
+import loadingLogo from './icons/loading.png';
+import noImageLogo from './icons/no-results.png';
+import noConnectionLogo from './icons/no-connection.png';
 
 class App extends Component {
 
@@ -87,9 +89,14 @@ class App extends Component {
             if (infowindow.marker !== marker) {
                 infowindow.marker = marker;
                 infowindow.setContent(
-                                    `<p class="header-iw">${marker.title}</p>
+                                    `<p class="header-iw">
+                                        <button class="refresh-btn" aria-label="Refresh image" title="Refresh image">
+                                            ⟳
+                                        </button>
+                                        ${marker.title}
+                                    </p>
                                     <figure class="figure-iw">
-                                        <img class="img-iw loading" src=${logo} alt="${marker.title}" />
+                                        <img class="img-iw" src=${loadingLogo} alt="${marker.title}" />
                                         <figcaption class="credit">
                                             Provided by <a href="" target="_blank" title="Image source">Flickr</a>
                                         <figcaption>
@@ -103,23 +110,72 @@ class App extends Component {
                     iwFig = document.querySelector('.figure-iw'),
                     iwImg = document.querySelector('.img-iw'),
                     iwImgSource = document.querySelector('.credit a'),
-                    locationElem = document.querySelector('.location-iw')
+                    iwImgRefresh = document.querySelector('.refresh-btn'),
+                    locationElem = document.querySelector('.location-iw');
 
                 iw.parentNode.classList.add('custom-iw-parent');
                 iw.classList.add('custom-iw');
                 iwFig.parentNode.classList.add('figure-iw-parent');
                 iwFig.parentNode.parentNode.classList.add('figure-iw-grandparent');
 
-                FlickrAPI.searchPic(marker).then(res => {
+                // Get data about image from local storage
+                const localImgInfo = this.manageLocalStorage(marker);
+
+                // To detect if image was cahced (if it loads less than 1s)
+                let isImgCached = null;
+                const timerIsCached = setTimeout(() => {
+                    iwImg.onload = null;
+                    if (!isImgCached) iwImg.src = noConnectionLogo;
+                    this.manageLocalStorage(marker, { imgSource: null, author: null });
+                }, 1000);
+
+                if (localImgInfo) {
                     iwImg.onload = () => {
-                        iwImg.classList.remove('loading');
-                        iwImgSource.href = res.author;
+                        clearTimeout(timerIsCached);
+                        isImgCached = true;
+                        iwImgSource.href = localImgInfo.author;
                         document.querySelector('.credit').classList.add('visible');
+                        iwImg.onload = null;
                     }
-                    iwImg.src = res.imgSource;
-                }).catch(() => {
-                    console.log('Fetch error')
+
+                    iwImg.src = localImgInfo.imgSource;
+                } else {
+                    clearTimeout(timerIsCached);
+                    iwImg.classList.add('loading');
+                }
+
+                FlickrAPI.searchPic(marker).then(res => {
+                    // Image update available
+                    if (!localImgInfo || (res.imgSource !== localImgInfo.imgSource)) {
+                        iwImg.onload = () => {
+                            this.manageLocalStorage(marker, res);
+                            iwImg.classList.remove('loading');
+                            iwImgSource.href = res.author;
+                            document.querySelector('.credit').classList.add('visible');
+                            iwImg.onload = null;
+                        }
+
+                        // If there is no local info about image at all - download it immediately
+                        // Else - make indication and load on click
+                        if (!localImgInfo || !localImgInfo.imgSource) {
+                            iwImg.src = res.imgSource;
+                        } else {
+                            iwImgRefresh.classList.add('visible');
+                            iwImgRefresh.onclick = () => {
+                                iwImg.src = res.imgSource;
+                                iwImgRefresh.classList.remove('visible');
+                            }
+                        }
+                    }
+                }).catch((e) => {
                     iwImg.classList.remove('loading');
+
+                    if(e.message === 'Empty response') {
+                        iwImg.src = noImageLogo;
+                    } else {
+                        // There is no information at all. Show noConnectionLogo
+                        if (!localImgInfo || !localImgInfo.imgSource) iwImg.src = noConnectionLogo;
+                    }
                 })
 
                 this.getNearestAddress(marker.position, geocoder)
@@ -128,13 +184,13 @@ class App extends Component {
         }
     }
 
+    //  Get nearest address with house number
     getNearestAddress = (markerPosition, geocoder) => {
         return new Promise( (resolve) => {
             geocoder.geocode({ 'location': markerPosition }, (results, status) => {
                 let response;
                 if (status === 'OK') {
                     if (results[0]) {
-                        //  Get nearest address with house number
                         const addrWithStreetNumber = results.filter(
                             res => res.address_components[0].types.indexOf('street_number') !== -1
                         )[0];
@@ -149,7 +205,33 @@ class App extends Component {
                 resolve(response)
             });
         })
+    }
 
+    // To store data about images on local machine
+    // It helps to show cached images instantly fithout waiting fetch
+    manageLocalStorage = (location, imageInfo) => {
+        const storedLocationsJSON = localStorage.getItem('storedLocationsJSON') !== null ?
+            localStorage.getItem('storedLocationsJSON') : '[]';
+
+        const storedLocations = JSON.parse(storedLocationsJSON);
+
+        let requiredLocation = storedLocations.find(stLoc => location.id === stLoc.id);
+
+        if (!requiredLocation) {
+            requiredLocation = { id: location.id, title: location.title }
+            storedLocations.push(requiredLocation)
+        }
+
+        // In case if there is another location with this id now - rewrite
+        if (requiredLocation.title !== location.title) {
+            requiredLocation.title = location.title;
+        }
+
+        if (imageInfo) requiredLocation.imageInfo = imageInfo;
+
+        localStorage.setItem('storedLocationsJSON', JSON.stringify(storedLocations))
+
+        return requiredLocation.imageInfo
     }
 
     render() {

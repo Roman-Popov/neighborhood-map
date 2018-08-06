@@ -35,7 +35,12 @@ class FilterPage extends Component {
                         onChange={(event) => this.updateQuery(event.target.value)}
                     />
                     <button
-                        className="clear-btn" aria-label="Clear filter" onClick={() => this.setState({query: ''})}>X</button>
+                        className="clear-btn"
+                        aria-label="Clear filter"
+                        onClick={() => this.setState({query: ''})}
+                    >
+                        X
+                    </button>
                 </form>
                 {markerList.map(marker => {
                     marker.setVisible(false)
