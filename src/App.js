@@ -257,7 +257,14 @@ function loadJS(src) {
     script.onerror = () => document.getElementById('map').classList.add('load-error');
     script.src = src;
     script.async = true;
+    script.defer = true;
     ref.parentNode.insertBefore(script, ref);
+}
+
+// Google Maps API failure handling
+window.gm_authFailure = () => {
+    document.getElementById('map').classList.add('load-error');
+    alert('Oops! There are problems with Google Maps API :( \nCheck JavaScript console for details.');
 }
 
 export default App;

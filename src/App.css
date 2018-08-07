@@ -20,6 +20,10 @@ body,
     background-repeat: no-repeat;
 }
 
+.load-error * {
+    display: none;
+}
+
 .header {
     position: relative;
     display: flex;
