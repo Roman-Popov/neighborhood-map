@@ -13,14 +13,6 @@ class FlickrAPI {
         return `${endpoint}/${requestFormat}/?api_key=${APIkey}&method=${method}&sort=${sort}&format=${responseFormat}&per_page=${limit}&${callback}`
     }
 
-    static getOnePic(responseJSONpics) {
-        const pic = responseJSONpics.filter(pic => (pic.ispublic) & !(pic.isfamily) & !(pic.isfriend))[0]
-        return {
-            imgSource: `https://farm${pic.farm}.staticflickr.com/${pic.server}/${pic.id}_${pic.secret}_n.jpg`,
-            author: `http://www.flickr.com/photos/${pic.owner}/${pic.id}`
-        }
-    }
-
     static searchPic(location) {
         const url = this.getCommonURL();
         return (
@@ -31,6 +23,14 @@ class FlickrAPI {
                 return this.getOnePic(result.photos.photo)
             })
         )
+    }
+
+    static getOnePic(responseJSONpics) {
+        const pic = responseJSONpics.filter(pic => (pic.ispublic) & !(pic.isfamily) & !(pic.isfriend))[0]
+        return {
+            imgSource: `https://farm${pic.farm}.staticflickr.com/${pic.server}/${pic.id}_${pic.secret}_n.jpg`,
+            author: `http://www.flickr.com/photos/${pic.owner}/${pic.id}`
+        }
     }
 }
 

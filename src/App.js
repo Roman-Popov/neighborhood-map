@@ -24,7 +24,7 @@ class App extends Component {
         // initMap() to the global window context
         window.initMap = this.initMap;
         // Asynchronously load the Google Maps script, passing in the callback reference
-        loadJS('https://maps.googleapis.com/maps/api/js?key=AIzaSyA_JmqWP_TjdTqHxIAHUKAC_LbxuiZHhpI&callback=initMap')
+        loadJS('https://maps.googleapis.com/maps/api/js?key=AIzaSyDuSe2FQKypBfD3LT2ep9l5NfSg_-XiKMo&callback=initMap')
     }
 
     initMap = () => {
@@ -49,7 +49,7 @@ class App extends Component {
 
         const bounds = new GM.LatLngBounds(),
             geocoder = new GM.Geocoder(),
-            infowindow = new GM.InfoWindow({
+            infoWindow = new GM.InfoWindow({
                 maxWidth: (window.innerWidth > 400) ? 250 : 200
             });
 
@@ -68,7 +68,7 @@ class App extends Component {
             });
 
             marker.addListener('click', () => {
-                populateInfoWindow(marker, infowindow);
+                populateInfoWindow(marker, infoWindow);
             });
 
             // Render is not necessary at this moment,
@@ -82,20 +82,20 @@ class App extends Component {
 
         map.fitBounds(bounds);
 
-        map.addListener('click', () => GM.event.trigger(infowindow, 'closeclick'));
+        map.addListener('click', () => GM.event.trigger(infoWindow, 'closeclick'));
 
-        infowindow.addListener('closeclick', function () {
-            infowindow.close();
-            // The marker property is cleared if the infowindow is closed.
-            infowindow.marker && infowindow.marker.setAnimation(null);
-            infowindow.marker = null;
+        infoWindow.addListener('closeclick', function () {
+            infoWindow.close();
+            // The marker property is cleared if the infoWindow is closed.
+            infoWindow.marker && infoWindow.marker.setAnimation(null);
+            infoWindow.marker = null;
         });
 
-        const populateInfoWindow = (marker, infowindow) => {
-            // The infowindow is not already opened on this marker.
-            if (infowindow.marker !== marker) {
-                infowindow.marker = marker;
-                infowindow.setContent(
+        const populateInfoWindow = (marker, infoWindow) => {
+            // The infoWindow is not already opened on this marker.
+            if (infoWindow.marker !== marker) {
+                infoWindow.marker = marker;
+                infoWindow.setContent(
                                     `<p class="header-iw">
                                         <button class="refresh-btn" aria-label="Refresh image" title="Refresh image">
                                             ⟳
@@ -110,7 +110,7 @@ class App extends Component {
                                     </figure>
                                     <address class="location-iw">Searching address...</address>`
                                 );
-                infowindow.open(map, marker);
+                infoWindow.open(map, marker);
 
                 // Apply custom infoWindow styles
                 const iw = document.querySelector('.gm-style-iw'),
@@ -212,7 +212,7 @@ class App extends Component {
     }
 
     // To store data about images on local machine
-    // It helps to show cached images instantly fithout waiting fetch
+    // It helps to show cached images instantly without waiting fetch
     manageLocalStorage = (location, imageInfo) => {
         const storedLocationsJSON = localStorage.getItem('storedLocationsJSON') !== null ?
             localStorage.getItem('storedLocationsJSON') : '[]';
