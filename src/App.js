@@ -109,6 +109,7 @@ class App extends Component {
                 const iw = document.querySelector('.gm-style-iw'),
                     iwFig = document.querySelector('.figure-iw'),
                     iwImg = document.querySelector('.img-iw'),
+                    iwCredit = document.querySelector('.credit'),
                     iwImgSource = document.querySelector('.credit a'),
                     iwImgRefresh = document.querySelector('.refresh-btn'),
                     locationElem = document.querySelector('.location-iw');
@@ -121,26 +122,21 @@ class App extends Component {
                 // Get data about image from local storage
                 const localImgInfo = this.manageLocalStorage(marker);
 
-                // To detect if image was cahced (if it loads less than 1s)
-                let isImgCached = null;
-                const timerIsCached = setTimeout(() => {
-                    iwImg.onload = null;
-                    if (!isImgCached) iwImg.src = noConnectionLogo;
-                    this.manageLocalStorage(marker, { imgSource: null, author: null });
-                }, 1000);
+                iwImg.onerror = () => {
+                    iwImg.onerror = null;
+                    iwImg.classList.remove('loading');
+                    iwCredit.classList.remove('visible');
+                    iwImg.src = noConnectionLogo;
+                }
 
                 if (localImgInfo) {
                     iwImg.onload = () => {
-                        clearTimeout(timerIsCached);
-                        isImgCached = true;
                         iwImgSource.href = localImgInfo.author;
-                        document.querySelector('.credit').classList.add('visible');
+                        iwCredit.classList.add('visible');
                         iwImg.onload = null;
                     }
-
                     iwImg.src = localImgInfo.imgSource;
                 } else {
-                    clearTimeout(timerIsCached);
                     iwImg.classList.add('loading');
                 }
 
@@ -151,7 +147,7 @@ class App extends Component {
                             this.manageLocalStorage(marker, res);
                             iwImg.classList.remove('loading');
                             iwImgSource.href = res.author;
-                            document.querySelector('.credit').classList.add('visible');
+                            iwCredit.classList.add('visible');
                             iwImg.onload = null;
                         }
 
@@ -173,7 +169,8 @@ class App extends Component {
                     if(e.message === 'Empty response') {
                         iwImg.src = noImageLogo;
                     } else {
-                        // There is no information at all. Show noConnectionLogo
+                        // There is no image information at all (including old images).
+                        // Show noConnectionLogo
                         if (!localImgInfo || !localImgInfo.imgSource) iwImg.src = noConnectionLogo;
                     }
                 })
