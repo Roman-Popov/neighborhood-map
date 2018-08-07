@@ -29,6 +29,12 @@ class App extends Component {
 
     initMap = () => {
 
+        setTimeout(() => {
+            if (navigator.onLine === false) {
+                alert('Oops! Looks like you are offline :( \nOnly cached content will be available.')
+            }
+        }, 1500);
+
         const { mapStyles, locations } = this.state;
 
         const GM = window.google.maps;
@@ -37,13 +43,14 @@ class App extends Component {
             zoom: 13,
             center: { lat: 55.75, lng: 37.616667 },
             styles: mapStyles,
+            fullscreenControl: false,
             mapTypeControl: false
         });
 
         const bounds = new GM.LatLngBounds(),
             geocoder = new GM.Geocoder(),
             infowindow = new GM.InfoWindow({
-                maxWidth: 250
+                maxWidth: (window.innerWidth > 400) ? 250 : 200
             });
 
         locations.map(location => {
@@ -247,6 +254,7 @@ class App extends Component {
 function loadJS(src) {
     const ref = window.document.getElementsByTagName("script")[0];
     const script = window.document.createElement("script");
+    script.onerror = () => document.getElementById('map').classList.add('load-error');
     script.src = src;
     script.async = true;
     ref.parentNode.insertBefore(script, ref);

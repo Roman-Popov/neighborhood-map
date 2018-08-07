@@ -63,7 +63,7 @@ class FilterPage extends Component {
                                         GM.event.trigger(marker, 'click')
                                     }}
                                 >
-                                    {marker.title}
+                                    <span>{marker.title}</span>
                                 </button>
                             </div>
                         )

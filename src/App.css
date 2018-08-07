@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Lato', sans-serif;
 }
 
 html,
@@ -12,20 +13,34 @@ body,
     width: 100%;
 }
 
+.load-error {
+    background-image: url(./icons/map-error.png);
+    background-position: center;
+    background-size: auto;
+    background-repeat: no-repeat;
+}
+
 .header {
     position: relative;
     display: flex;
     align-items: center;
-    background: whitesmoke;
+    background: rgb(241, 240, 237);
     text-align: center;
     height: 2.5em;
 }
 
 .header-title {
-    position: relative;
+    font-family: 'Cinzel', serif;
+    font-size: 1.5em;
+    /* position: relative;
     width: calc(100% - 9rem);
     margin-left: 2rem;
-    margin-right: 10rem;
+    margin-right: 10rem; */
+    color: transparent;
+    text-shadow: -1px -1px 0px black, 1px 1px 2px grey;
+
+    position: absolute;
+    width: 100%;
 }
 
 .header-shadow {
@@ -90,7 +105,7 @@ body,
 
 .filter-page {
     position: absolute;
-    background: whitesmoke;
+    background: hsl(40, 15%, 94%);
     top: 100%;
     left: 0;
     width: 300px;
@@ -102,6 +117,9 @@ body,
     padding-bottom: 0.5em;
     border-bottom: 1px solid gray;
     border-right: 1px solid gray;
+    overflow: auto;
+    direction: rtl;
+    max-height: 450px;
 }
 
 .visible {
@@ -110,11 +128,15 @@ body,
 }
 
 .filter-places-input-wrapper {
+    background: hsl(40, 15%, 94%);
     border-bottom: 3px double lightgray;
     padding: 1em 0 1em;
     display: flex;
     align-items: center;
     justify-content: center;
+    direction: ltr;
+    position: sticky;
+    top: 0;
 }
 
 .filter-input {
@@ -150,11 +172,12 @@ body,
 }
 
 .location-btn-wrapper {
+    direction: ltr;
     border-bottom: 1px dotted lightgray;
 }
 
 .location-btn {
-    background: whitesmoke;
+    background: rgb(241, 240, 237);
     border: none;
     width: 95%;
     height: 1.75rem;
@@ -165,7 +188,12 @@ body,
 
 .location-btn:hover {
     background: white;
-    border: 1px solid lightblue;
+    box-shadow:inset 0px 0px 0px 1px lightblue;
+}
+
+.location-btn span {
+    display: inline-block;
+    margin-right: calc(270px - 100%);
 }
 
 #map {
@@ -311,5 +339,40 @@ body,
 
     100% {
         color: black;
+    }
+}
+
+@media screen and (max-height: 460px) {
+    .filter-page {
+        max-height: 270px;
+    }
+}
+
+@media screen and (max-width: 770px) {
+    .header-title {
+        font-size: 1em;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .load-error {
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .header-title {
+        text-align: right;
+        right: 1rem;
+    }
+
+    .filter-btn {
+        width: 6rem;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .header-title {
+        font-size: 0.9em;
+        width: calc(100% - 10rem);
     }
 }
