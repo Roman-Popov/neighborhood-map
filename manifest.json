@@ -1,0 +1,15 @@
+{
+  "short_name": "Neighborhood Map",
+  "name": "Neighborhood Map by Roman Popov RPDS",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#f1f0ed",
+  "background_color": "#ffffff"
+}
